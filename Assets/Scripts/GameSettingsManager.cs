@@ -1,29 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 
 public class GameSettingsManager : MonoBehaviour
 {
-    public Slider numbersSlider; // Slider дл€ настройки количества отображаемых чисел
-    public Slider timeSlider; // Slider дл€ настройки времени игровой сессии
-    public GameSessionManager gameSessionManager; // —сылка на скрипт GameSessionManager
+    public Slider _numbersSlider;
+    public Slider _timeSlider;
+    public GameSessionManager _gameSessionManager;
 
     public void OnNumbersSliderChange()
     {
-        int numbersCount = (int)numbersSlider.value;
-        gameSessionManager.numbersToClick.Clear();
+        int numbersCount = (int)_numbersSlider.value;
+        _gameSessionManager._numbersToClick.Clear();
 
         for (int i = 1; i <= numbersCount; i++)
         {
-            gameSessionManager.numbersToClick.Add(i);
+            _gameSessionManager._numbersToClick.Add(i);
         }
     }
 
     public void OnTimeSliderChange()
     {
-        float sessionTime = timeSlider.value;
-        gameSessionManager.sessionTime = sessionTime;
+        float sessionTime = _timeSlider.value;
+        _gameSessionManager._sessionTime = sessionTime;
     }
 }
