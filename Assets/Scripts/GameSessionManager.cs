@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,9 @@ public class GameSessionManager : MonoBehaviour
     private bool _sessionInProgress;
 
     public float _sessionTime = 60f;
-    public List<int> _numbersToClick = new List<int> { 1 };
+    private List<int> _numbersToClick = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private List<int> _clickedNumbers = new List<int>();
+
     public void StartSession()
     {
         _remainingTime = _sessionTime;
@@ -28,7 +31,6 @@ public class GameSessionManager : MonoBehaviour
         _currentNumberIndex = 0;
         _sessionInProgress = true;
 
-        SpawnButtons();
         StartCoroutine(Countdown());
     }
 
@@ -45,12 +47,23 @@ public class GameSessionManager : MonoBehaviour
         {
             _resultText.text = "Fail";
         }
+        _remainingTime = 0f;
+        _progressBar.value = 0f;
     }
     public void RestartSession()
     {
         _resultText.text = "";
-
+        ClearPanel();
+        SpawnButtons();
+        _clickedNumbers.Clear();
         StartSession();
+    }
+    public void ClearPanel()
+    {
+        foreach (Transform button in _panelTransform)
+        {
+            Destroy(button.gameObject);
+        }
     }
     IEnumerator Countdown()
     {
@@ -71,18 +84,18 @@ public class GameSessionManager : MonoBehaviour
         if (!_sessionInProgress)
             return;
 
-        if (clickedNumber == _numbersToClick[_currentNumberIndex])
-        {
-            _currentNumberIndex++;
-
-            if (_currentNumberIndex >= _numbersToClick.Count)
-            {
-                EndSession(true);
-            }
-        }
-        else
+        if (clickedNumber != _numbersToClick[_currentNumberIndex])
         {
             EndSession(false);
+            return;
+        }
+
+        _currentNumberIndex++;
+        _clickedNumbers.Add(clickedNumber);
+
+        if (_currentNumberIndex >= _numbersToClick.Count)
+        {
+            EndSession(true);
         }
     }
 
@@ -99,8 +112,12 @@ public class GameSessionManager : MonoBehaviour
             numberOfButtons = _maxNumber;
         }
 
-        int minValue = 1;
-        int maxValue = numberOfButtons;
+        _numbersToClick = new List<int>();
+
+        for (int i = 1; i <= numberOfButtons; i++)
+        {
+            _numbersToClick.Add(i);
+        }
 
         for (int i = 0; i < numberOfButtons; i++)
         {
@@ -113,9 +130,7 @@ public class GameSessionManager : MonoBehaviour
             buttonObject.transform.localPosition = randomPosition;
 
             Text buttonText = buttonObject.GetComponentInChildren<Text>();
-            buttonText.text = (minValue + i).ToString();
-
-            buttonObject.GetComponent<Button>().onClick.AddListener(() => DestroyButton(buttonObject));
+            buttonText.text = _numbersToClick[i].ToString();
         }
     }
 
@@ -132,8 +147,27 @@ public class GameSessionManager : MonoBehaviour
         return new Vector2(randomX, randomY);
     }
 
-    private void DestroyButton(GameObject buttonObject)
+    public void HandleButtonClick(GameObject buttonObject)
     {
+        if (!_sessionInProgress)
+            return;
+
+        int clickedNumber = int.Parse(buttonObject.GetComponentInChildren<Text>().text);
+
+        if (clickedNumber != _clickedNumbers.Count + 1)
+        {
+            EndSession(false);
+            return;
+        }
+
+        _currentNumberIndex++;
+        _clickedNumbers.Add(clickedNumber);
+
+        if (_currentNumberIndex >= _numbersToClick.Count)
+        {
+            EndSession(true);
+        }
+
         Destroy(buttonObject);
     }
 }
