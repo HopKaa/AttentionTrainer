@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,10 +19,10 @@ public class GameSessionManager : MonoBehaviour
     private bool _sessionInProgress;
 
     public float _sessionTime = 60f;
-    private List<int> _numbersToClick = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private List<int> _numbersToClick = new List<int> ();
     private List<int> _clickedNumbers = new List<int>();
 
-    public void StartSession()
+    private void StartSession()
     {
         _remainingTime = _sessionTime;
         _progressBar.value = 1f;
@@ -34,7 +33,7 @@ public class GameSessionManager : MonoBehaviour
         StartCoroutine(Countdown());
     }
 
-    void EndSession(bool success)
+    private void EndSession(bool success)
     {
         _sessionInProgress = false;
         StopCoroutine(Countdown());
@@ -50,7 +49,7 @@ public class GameSessionManager : MonoBehaviour
         _remainingTime = 0f;
         _progressBar.value = 0f;
     }
-    public void RestartSession()
+    private void RestartSession()
     {
         _resultText.text = "";
         ClearPanel();
@@ -58,7 +57,7 @@ public class GameSessionManager : MonoBehaviour
         _clickedNumbers.Clear();
         StartSession();
     }
-    public void ClearPanel()
+    private void ClearPanel()
     {
         foreach (Transform button in _panelTransform)
         {
@@ -79,7 +78,7 @@ public class GameSessionManager : MonoBehaviour
         EndSession(false);
     }
 
-    public void CheckClick(int clickedNumber)
+    private void CheckClick(int clickedNumber)
     {
         if (!_sessionInProgress)
             return;
@@ -99,7 +98,7 @@ public class GameSessionManager : MonoBehaviour
         }
     }
 
-    public void SpawnButtons()
+    private void SpawnButtons()
     {
         int numberOfButtons = (int)_slider.value;
 
@@ -113,8 +112,17 @@ public class GameSessionManager : MonoBehaviour
         }
 
         _numbersToClick = new List<int>();
+        int maxValue = (int)_slider.value;
+        if (maxValue < _minNumber)
+        {
+            maxValue = _minNumber;
+        }
+        else if (maxValue > _maxNumber)
+        {
+            maxValue = _maxNumber;
+        }
 
-        for (int i = 1; i <= numberOfButtons; i++)
+        for (int i = 1; i <= maxValue; i++)
         {
             _numbersToClick.Add(i);
         }
