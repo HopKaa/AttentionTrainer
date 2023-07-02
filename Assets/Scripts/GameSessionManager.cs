@@ -19,8 +19,9 @@ public class GameSessionManager : MonoBehaviour
     private bool _sessionInProgress;
 
     public float _sessionTime = 60f;
+
     private List<int> _numbersToClick = new List<int> ();
-    private List<int> _clickedNumbers = new List<int>();
+    private List<int> _clickedNumbers = new List<int> ();
 
     private void StartSession()
     {
@@ -111,6 +112,13 @@ public class GameSessionManager : MonoBehaviour
             numberOfButtons = _maxNumber;
         }
 
+        _numbersToClick.Clear();
+
+        for (int i = 1; i <= numberOfButtons; i++)
+        {
+            _numbersToClick.Add(i);
+        }
+
         _numbersToClick = new List<int>();
         int maxValue = (int)_slider.value;
         if (maxValue < _minNumber)
@@ -140,6 +148,12 @@ public class GameSessionManager : MonoBehaviour
             Text buttonText = buttonObject.GetComponentInChildren<Text>();
             buttonText.text = _numbersToClick[i].ToString();
         }
+        Debug.Log("Содержимое списка _numbersToClick:");
+
+        foreach (int number in _numbersToClick)
+        {
+            Debug.Log(number);
+        }
     }
 
     private Vector2 GetRandomPositionInPanel(RectTransform panelRect)
@@ -161,21 +175,8 @@ public class GameSessionManager : MonoBehaviour
             return;
 
         int clickedNumber = int.Parse(buttonObject.GetComponentInChildren<Text>().text);
-
-        if (clickedNumber != _clickedNumbers.Count + 1)
-        {
-            EndSession(false);
-            return;
-        }
-
-        _currentNumberIndex++;
-        _clickedNumbers.Add(clickedNumber);
-
-        if (_currentNumberIndex >= _numbersToClick.Count)
-        {
-            EndSession(true);
-        }
-
+        CheckClick(clickedNumber);
+      
         Destroy(buttonObject);
     }
 }
