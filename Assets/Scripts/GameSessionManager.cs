@@ -37,7 +37,6 @@ public class GameSessionManager : MonoBehaviour
     private void EndSession(bool success)
     {
         _sessionInProgress = false;
-        StopCoroutine(Countdown());
 
         if (success)
         {
@@ -47,6 +46,7 @@ public class GameSessionManager : MonoBehaviour
         {
             _resultText.text = "Fail";
         }
+        StopAllCoroutines();
         _remainingTime = 0f;
         _progressBar.value = 0f;
     }
@@ -91,6 +91,7 @@ public class GameSessionManager : MonoBehaviour
         }
 
         _currentNumberIndex++;
+
         _clickedNumbers.Add(clickedNumber);
 
         if (_currentNumberIndex >= _numbersToClick.Count)
@@ -120,7 +121,9 @@ public class GameSessionManager : MonoBehaviour
         }
 
         _numbersToClick = new List<int>();
+
         int maxValue = (int)_slider.value;
+
         if (maxValue < _minNumber)
         {
             maxValue = _minNumber;
@@ -139,6 +142,7 @@ public class GameSessionManager : MonoBehaviour
         {
             GameObject buttonObject = Instantiate(_buttonPrefab);
             buttonObject.transform.SetParent(_panelTransform);
+            buttonObject.GetComponent<Number>().Initialized(this);
 
             RectTransform panelRect = _panelTransform.GetComponent<RectTransform>();
             Vector2 randomPosition = GetRandomPositionInPanel(panelRect);
@@ -147,12 +151,6 @@ public class GameSessionManager : MonoBehaviour
 
             Text buttonText = buttonObject.GetComponentInChildren<Text>();
             buttonText.text = _numbersToClick[i].ToString();
-        }
-        Debug.Log("Содержимое списка _numbersToClick:");
-
-        foreach (int number in _numbersToClick)
-        {
-            Debug.Log(number);
         }
     }
 
