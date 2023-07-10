@@ -8,25 +8,22 @@ public class GameSessionManager : MonoBehaviour
     private const float _defaultSessionTime = 60f;
     private const string _resultFail = "Fail";
     private const string _resultSuccess = "Success";
-    private const int FieldWidth = 850;
-    private const int FieldHeight = 300;
 
-    [SerializeField] private Transform _panelTransform;
+    [SerializeField] private RectTransform _panelTransform;
     [SerializeField] private Slider _progressBar;
     [SerializeField] private Text _timerText;
     [SerializeField] private Text _resultText;
-    [SerializeField ] private GameObject _buttonPrefab;
+    [SerializeField] private GameObject _buttonPrefab;
     [SerializeField] private Slider _slider;
-    [SerializeField] public GameObject _field;
     [SerializeField] private Slider _timeSlider;
+
+    private readonly List<Number> _numbers = new();
 
     private float _remainingTime;
     private int _currentNumberMax;
     private bool _sessionInProgress;
     private float _sessionTime = _defaultSessionTime;
-
     private int _currentNumber;
-    private readonly List<Number> _numbers = new();
 
     private void EndSession(bool success)
     {
@@ -58,21 +55,21 @@ public class GameSessionManager : MonoBehaviour
         _currentNumber = 0;
         _remainingTime = _sessionTime;
         _progressBar.value = 1f;
-        _resultText.text = "";
+        _resultText.text = string.Empty;
         _sessionInProgress = true;
     }
     private void ClearPanel()
     {
         foreach (Number number in _numbers)
         {
-            if (number != null)
+            if (number)
             {
                 Destroy(number.gameObject);
             }
         }
         _numbers.Clear();
     }
-    IEnumerator Countdown()
+    private IEnumerator Countdown()
     {
         while (_remainingTime > 0)
         {
@@ -95,9 +92,9 @@ public class GameSessionManager : MonoBehaviour
 
         for (int i = 0; i < _currentNumberMax; i++)
         {
-            GameObject buttonObject = Instantiate(_buttonPrefab);
-            buttonObject.transform.SetParent(_panelTransform);
-            Rect _fieldSize = new Rect(0, 0, FieldWidth, FieldHeight);
+            GameObject buttonObject = Instantiate(_buttonPrefab, _panelTransform);
+
+            Rect _fieldSize = _panelTransform.rect;
 
             buttonObject.GetComponent<Number>().Initialized(this, i, _fieldSize);
 
